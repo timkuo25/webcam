@@ -1,95 +1,116 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
 
-export default function Home() {
+import { useEffect, useRef, useState } from "react";
+
+const Video = () => {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+
+  const [streaming, setStreaming] = useState(true);
+  const [view, setView] = useState({
+    filter: 'original',
+    zoomInScale: 1 
+  });
+
+  useEffect(() => {
+    const constraints = {
+      audio: false,
+      video: true
+    };
+
+    const catchStream = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+    }
+
+    const stopStream = () => {
+      streamRef.current?.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+      videoRef.current.srcObject = null;
+    }
+
+    if (streaming) catchStream();
+    else stopStream();
+
+    
+  }, [streaming])
+
+
+  useEffect(() => {
+    const ctx = canvasRef.current.getContext('2d');
+
+    const drawToCanvas = () => {
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      switch (view.filter) {
+        case 'grayscale':
+          ctx.filter = 'grayscale(100%)';
+          break;
+        case 'blur':
+          ctx.filter = 'blur(4px)';
+          break;
+        default:
+          ctx.filter = 'none';
+      }
+            
+      ctx.drawImage(
+        videoRef.current,
+        0,
+        0, 
+        canvasRef.current.width * view.zoomInScale,
+        canvasRef.current.height * view.zoomInScale,
+      );
+
+      requestAnimationFrame(drawToCanvas);
+    }
+    drawToCanvas();
+
+    return () => cancelAnimationFrame(drawToCanvas);
+  }, [view])
+
+  const downloadImage = () => {
+    const canvas = canvasRef.current;
+    const link = document.createElement("a");
+
+    link.href = canvas.toDataURL("image/png");
+    link.download = "canvas-image.png";
+    link.click();
+  };
+  
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    <div>
+      <video ref={videoRef} style={{display: 'none'}}/>
+      <canvas width='700' height='500' ref={canvasRef} style={{ border: '5px, black, solid'}}/>
+      <div>
+        <button onClick={() => setStreaming(!streaming)}>{streaming ? 'release stream' : 'start stream'}</button>
+        {
+          streaming
+          ?
+          <>
+            <div>
+              <button onClick={() => setView(prev => ({ ...prev, zoomInScale: prev.zoomInScale * 1.1 }))}>zoom in</button>
+              <button onClick={() => setView(prev => ({ ...prev, zoomInScale: prev.zoomInScale * 0.9 }))}>zoom out</button>
+            </div>
+            <div>
+              <button onClick={() => setView(prev => ({...prev, filter: 'original'}))}>original</button>
+              <button onClick={() => setView(prev => ({...prev, filter: 'grayscale'}))}>grayscale</button>
+              <button onClick={() => setView(prev => ({...prev, filter: 'blur'}))}>blur</button>
+            </div>
+            <div>
+              <button onClick={downloadImage}> save</button>
+            </div>
+          </>
+          : null
+        }
+      </div>
     </div>
   );
 }
+
+export default Video;
