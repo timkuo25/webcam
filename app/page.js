@@ -74,12 +74,35 @@ const Video = () => {
   }, [view])
 
   const downloadImage = () => {
+    // Create new canvas and draw current frame
     const canvas = canvasRef.current;
-    const link = document.createElement("a");
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = canvas.width;
+    offCanvas.height = canvas.height;
+    const offCtx = offCanvas.getContext("2d");
+    offCtx.drawImage(canvas, 0, 0);
+    
+    // Draw watermark and download
+    const watermark = new Image();
+    watermark.src = "/logo.png";
+    watermark.onload = () => {
+      const width = 200; 
+      const height = 70; 
+      offCtx.globalAlpha = 0.5;
+      offCtx.drawImage(
+        watermark,
+        offCanvas.width - width - 20,
+        offCanvas.height - height - 20,
+        width,
+        height
+      );
 
-    link.href = canvas.toDataURL("image/png");
-    link.download = "canvas-image.png";
-    link.click();
+      const link = document.createElement("a");  
+      link.href = offCanvas.toDataURL("image/png");
+      link.download = "canvas-image.png";
+      link.click();
+
+    }
   };
   
 
