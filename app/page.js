@@ -1,7 +1,6 @@
 'use client'
 
 import React, { Component } from "react";
-import "@/style.css";
 import 'context-filter-polyfill';
 
 class Video extends Component {
@@ -44,13 +43,8 @@ class Video extends Component {
       video: true
     };
 
-    // navigator.mediaDevices.getUserMedia(constraints).then()
 
     try{
-      // console.log('navigator:', navigator);
-      // console.log('navigator.mediaDevices:', navigator.mediaDevices);
-      // console.log(navigator.mediaDevices === undefined);
-      // console.log('navigator.mediaDevices.getUserMedia:', navigator?.mediaDevices?.getUserMedia);
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       this.streamRef.current = stream;
       
@@ -60,12 +54,7 @@ class Video extends Component {
       }
     } catch(err) {
       console.log('error keys:', Object.keys(err));
-      console.log('name:', err?.name);
-      console.log('message:', err?.message);
     }
-    
-    
-
   }
 
   stopStream = () => {
@@ -80,15 +69,12 @@ class Video extends Component {
     switch (this.state.view.filter) {
       case 'grayscale':
         ctx.filter = 'grayscale(100%)';
-        this.canvasRef.current.className = 'grayscale';
         break;
       case 'blur':  
         ctx.filter = 'blur(4px)';
-        this.canvasRef.current.className = 'blur';
         break;
       default:
         ctx.filter = 'none';
-        this.canvasRef.current.className = 'none';
     }
           
     ctx.drawImage(
@@ -105,7 +91,6 @@ class Video extends Component {
   componentDidMount = () => {
     this.catchStream();
     this.drawToCanvas();
-
   }
 
   componentDidUpdate = (_, prevStates) => {
