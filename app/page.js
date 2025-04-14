@@ -42,13 +42,28 @@ class Video extends Component {
       video: true
     };
 
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    this.streamRef.current = stream;
+    // navigator.mediaDevices.getUserMedia(constraints).then()
 
-    if (this.videoRef.current) {
-      this.videoRef.current.srcObject = stream;
-      this.videoRef.current.play();
+    try{
+      // console.log('navigator:', navigator);
+      // console.log('navigator.mediaDevices:', navigator.mediaDevices);
+      // console.log(navigator.mediaDevices === undefined);
+      // console.log('navigator.mediaDevices.getUserMedia:', navigator?.mediaDevices?.getUserMedia);
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.streamRef.current = stream;
+      
+      if (this.videoRef.current) {
+        this.videoRef.current.srcObject = stream;
+        this.videoRef.current.play();
+      }
+    } catch(err) {
+      console.log('error keys:', Object.keys(err));
+      console.log('name:', err?.name);
+      console.log('message:', err?.message);
     }
+    
+    
+
   }
 
   stopStream = () => {
@@ -85,6 +100,7 @@ class Video extends Component {
   componentDidMount = () => {
     this.catchStream();
     this.drawToCanvas();
+
   }
 
   componentDidUpdate = (_, prevStates) => {
@@ -134,7 +150,12 @@ class Video extends Component {
 
   render = () => (
     <div>
-      <video ref={this.videoRef} style={{display: 'none'}}/>
+      <video
+        ref={this.videoRef}
+        autoPlay 
+        playsInline 
+        muted
+        style={{display: 'none'}}/>
       <canvas width='700' height='500' ref={this.canvasRef} style={{ border: '5px, black, solid'}}/>
       <div>
         <button
@@ -167,6 +188,9 @@ class Video extends Component {
 }
 
 export default Video;
+
+
+
 
 // 'use client'
 
