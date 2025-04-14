@@ -86,12 +86,15 @@ class Video extends Component {
       // default:
       //   ctx.filter = 'none';
       case 'grayscale':
+        ctx.filter = 'grayscale(100%)';
         this.canvasRef.current.className = 'grayscale';
         break;
-      case 'blur':
+      case 'blur':  
+        ctx.filter = 'blur(4px)';
         this.canvasRef.current.className = 'blur';
         break;
       default:
+        ctx.filter = 'none';
         this.canvasRef.current.className = 'none';
     }
           
