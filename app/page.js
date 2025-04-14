@@ -2,6 +2,7 @@
 
 import React, { Component } from "react";
 import "@/style.css";
+import 'context-filter-polyfill';
 
 class Video extends Component {
   state = {
@@ -77,14 +78,6 @@ class Video extends Component {
     const ctx = this.canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, this.canvasRef.current.width, this.canvasRef.current.height);
     switch (this.state.view.filter) {
-      // case 'grayscale':
-      //   ctx.filter = 'grayscale(100%)';
-      //   break;
-      // case 'blur':
-      //   ctx.filter = 'blur(4px)';
-      //   break;
-      // default:
-      //   ctx.filter = 'none';
       case 'grayscale':
         ctx.filter = 'grayscale(100%)';
         this.canvasRef.current.className = 'grayscale';
