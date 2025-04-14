@@ -1,6 +1,7 @@
 'use client'
 
 import React, { Component } from "react";
+import "@/style.css";
 
 class Video extends Component {
   state = {
@@ -76,14 +77,22 @@ class Video extends Component {
     const ctx = this.canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, this.canvasRef.current.width, this.canvasRef.current.height);
     switch (this.state.view.filter) {
+      // case 'grayscale':
+      //   ctx.filter = 'grayscale(100%)';
+      //   break;
+      // case 'blur':
+      //   ctx.filter = 'blur(4px)';
+      //   break;
+      // default:
+      //   ctx.filter = 'none';
       case 'grayscale':
-        ctx.filter = 'grayscale(100%)';
+        this.canvasRef.current.className = 'grayscale';
         break;
       case 'blur':
-        ctx.filter = 'blur(4px)';
+        this.canvasRef.current.className = 'blur';
         break;
       default:
-        ctx.filter = 'none';
+        this.canvasRef.current.className = 'none';
     }
           
     ctx.drawImage(
