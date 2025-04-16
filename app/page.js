@@ -41,6 +41,7 @@ class Video extends Component {
   }
   
   getDevices = async () => {
+    let stream = await navigator.mediaDevices.getUserMedia({ video: true });
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(item => item.kind === 'videoinput');
     console.log(devices);
