@@ -43,6 +43,7 @@ class Video extends Component {
   getDevices = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(item => item.kind === 'videoinput');
+    console.log(devices);
     if (devices.length > 0) {
       this.setState(prev => ({
         ...prev,
