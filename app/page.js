@@ -76,7 +76,7 @@ class Video extends Component {
       
       if (this.videoRef.current) {
         this.videoRef.current.srcObject = stream;
-        this.videoRef.current.play();
+        // this.videoRef.current.play();
       }
     } catch(err) {
       console.log('error keys:', Object.keys(err));
